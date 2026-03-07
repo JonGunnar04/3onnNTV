@@ -1,41 +1,22 @@
 import { useState } from "react";
 import "./App.css";
-import { Input } from "./components/input";
-import { ShopCard } from "./components/ShopCard";
-import { Button } from "./components/Button";
+import { Form } from "./components/Form";
+// import { ShopCard } from "./components/ShopCard";
+
 
 function App() {
-  const [myName, setMyName] = useState("Jon Gunnar");
-  const [email, setEmail] = useState("");
-
-  const onClick = () => {
-    alert("submitted:" + email);
-  };
-
+  const [state, setState] = useState(true)
   return (
-    <>
-      {/* bua til button component */}
-      <h2>hello world</h2>
-
-      <div>myName</div>
-      <div>{myName}</div>
-
-      <div>
-        <Input value={myName} onChange={(e) => setMyName(e.target.value)} />
-
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        <button onClick={onClick}>Submit</button>
-
-        <Button onClick={onClick} />
-      </div>
-
-      <ShopCard />
-    </>
+    <div className="w-full justify-center">
+      <button onClick={() => {
+        setState(s => !s)
+      }}>Click</button>
+      {/* <ShopCard />
+      <ShopCard /> */}
+      {state &&
+        <Form />
+      }
+    </div>
   );
 }
 

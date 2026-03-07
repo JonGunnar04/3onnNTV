@@ -1,7 +1,10 @@
-type Props = {
-  onClick: React.MouseEventHandler<HTMLButtonElement>;
-};
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+    value?: string
+}
 
-export function Button({ onClick }: Props) {
-  return <button onClick={onClick}>submit</button>;
+
+export function Button({ value = 'submit', ...props }: ButtonProps) {
+    return (
+        <button {...props}>{value}</button>
+    );
 }
