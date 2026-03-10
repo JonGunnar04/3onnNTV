@@ -52,12 +52,30 @@ export function Form() {
 
     const onInputChange = useCallback((key: keyof FormValuesType, value: string) => {
         dataRef.current[key] = value
+        setValues((prev) => ({
+            ...prev,
+            [key]: value,
+        }))
     }, [])
 
     const onSubmit = () => {
-        const { firstName, email } = dataRef.current
-        localStorage.setItem(email, JSON.stringify(dataRef.current))
-        window.alert(`Hello ${firstName}; email address ${email}`)
+        const {
+            firstName,
+            lastName,
+            email,
+            mobileNumber,
+            selectedFruit,
+            radioButton,
+        } = dataRef.current
+
+        window.alert(
+            `First name: ${firstName}
+Last name: ${lastName}
+Email: ${email}
+Mobile number: ${mobileNumber}
+Selected fruit: ${selectedFruit}
+Radio button: ${radioButton}`
+        )
     }
 
     const loadEmailRef = useRef<HTMLInputElement>(null)
@@ -70,6 +88,7 @@ export function Form() {
                 window.alert(parsedLocalStorageValue.firstName)
                 loadEmailRef.current.value = ''
                 setValues(parsedLocalStorageValue)
+                dataRef.current = parsedLocalStorageValue
             } else {
                 window.alert('Email not found')
             }
@@ -79,24 +98,23 @@ export function Form() {
     }, [])
 
     // TODO: Use the correct state to connect to debounce state
-    const [TEMP_HOOK_REPLACE] = useState('');
+    const [TEMP_HOOK_REPLACE] = useState(values.firstName);
 
     // Set delay time according to your needs
     const debouncedSearchTerm = useDebounce(TEMP_HOOK_REPLACE, 1000);
     // TODO: Write useEffect to repopulate the localstorage after debounce
     // NOTE: The email has to be present for this to work
 
-
     // TODO: If no email is provided, display only the email input, or some other alternative UX
 
     return (
-        <div >
+        <div>
             {/* {(firstName || lastName) ? <p>Your name is: {headerValue} </p> : <p>What is your name?</p>} */}
-            <Card className="w-3/4 max-w-7xl bg-blue-950">
+            <Card className="w-full max-w-3xl bg-blue-950 mt-4 border-white/20">
                 <CardHeader>
                     <div className="flex items-center gap-2">
                         <div className="grow border h-0"></div>
-                        <CardTitle className="text-white">Example</CardTitle>
+                        <CardTitle className="text-white text-2xl font-light">Example</CardTitle>
                         <div className="grow border h-0"></div>
                     </div>
                 </CardHeader>
@@ -112,10 +130,10 @@ export function Form() {
                             <Field>
                                 <p className="text-white">Search term: {debouncedSearchTerm}</p>
                                 <Input
-                                    className="bg-white"
+                                    className="bg-white h-14 text-lg"
                                     id="firstName"
                                     autoComplete="off"
-                                    placeholder="Jón Gunnar"
+                                    placeholder="First name"
                                     // TODO: Set values to all input fields in the form
                                     value={values.firstName}
                                     onChange={(e) => {
@@ -125,10 +143,11 @@ export function Form() {
                             </Field>
                             <Field>
                                 <Input
-                                    className="bg-white"
+                                    className="bg-white h-14 text-lg"
                                     id="lastName"
                                     autoComplete="off"
-                                    placeholder="Karlsson"
+                                    placeholder="Last name"
+                                    value={values.lastName}
                                     onChange={(e) => {
                                         onInputChange('lastName', e.target.value)
                                     }}
@@ -136,12 +155,12 @@ export function Form() {
                             </Field>
                             <Field>
                                 <Input
-                                    className="bg-white"
+                                    className="bg-white h-14 text-lg"
                                     id="email"
-                                    disabled
                                     autoComplete="off"
                                     type="email"
                                     placeholder="example@email.com"
+                                    value={values.email}
                                     onChange={(e) => {
                                         onInputChange('email', e.target.value)
                                     }}
@@ -149,11 +168,12 @@ export function Form() {
                             </Field>
                             <Field>
                                 <Input
-                                    className="bg-white"
+                                    className="bg-white h-14 text-lg"
                                     id="mobileNumber"
                                     autoComplete="off"
-                                    type="number"
+                                    type="tel"
                                     placeholder="Mobile number"
+                                    value={values.mobileNumber}
                                     onChange={(e) => {
                                         onInputChange('mobileNumber', e.target.value)
                                     }}
@@ -162,11 +182,12 @@ export function Form() {
                         </FieldGroup>
                         <FieldGroup>
                             <Select
+                                value={values.selectedFruit}
                                 onValueChange={(e) => {
-                                    onInputChange('mobileNumber', e)
+                                    onInputChange('selectedFruit', e)
                                 }}
                             >
-                                <SelectTrigger className="w-full bg-white" >
+                                <SelectTrigger className="w-full bg-white h-14 text-lg">
                                     <SelectValue placeholder="Select a fruit" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -182,9 +203,13 @@ export function Form() {
                             </Select>
                         </FieldGroup>
                         <FieldGroup>
-                            <RadioGroup defaultValue="comfortable" className="w-fit flex" onValueChange={(e) => {
-                                onInputChange('mobileNumber', e)
-                            }}>
+                            <RadioGroup
+                                value={values.radioButton ?? ""}
+                                className="w-fit flex items-center gap-3"
+                                onValueChange={(e) => {
+                                    onInputChange('radioButton', e)
+                                }}
+                            >
                                 <RadioGroupItem className="bg-white" value="yes" id="yes" />
                                 <Label className="text-white" htmlFor="yes">Yes</Label>
                                 <RadioGroupItem className="bg-white" value="no" id="no" />
@@ -193,13 +218,13 @@ export function Form() {
                         </FieldGroup>
                     </FieldSet>
                     <div className="flex flex-col py-4 gap-4">
-                        <Button type="submit" className="bg-pink-500 p-4 rounded text-white uppercase" />
+                        <Button type="submit" className="bg-pink-500 p-4 rounded text-white uppercase tracking-[0.3em]" />
                         <div className="flex items-center gap-2">
                             <div className="grow border h-0"></div>
-                            <CardTitle className="text-white">or</CardTitle>
+                            <CardTitle className="text-white font-light">or</CardTitle>
                             <div className="grow border h-0"></div>
                         </div>
-                        <Button value="edit" type="submit" className="bg-black p-4 rounded text-white uppercase border-pink-500 border" />
+                        <Button value="edit" type="button" className="bg-black p-4 rounded text-white uppercase border-pink-500 border tracking-[0.3em]" />
                     </div>
                 </form>
             </Card>
